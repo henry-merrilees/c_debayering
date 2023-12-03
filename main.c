@@ -1,9 +1,9 @@
-#define VERTICAL_RESOLUTION 30
-#define HORIZONTAL_RESOLUTION 40
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#define VERTICAL_RESOLUTION 30
+#define HORIZONTAL_RESOLUTION 40
 
 typedef struct {
   uint8_t r, g, b, a;
@@ -13,16 +13,12 @@ typedef struct {
 typedef uint8_t pixel_buf_Type[VERTICAL_RESOLUTION][HORIZONTAL_RESOLUTION];
 typedef rgba_t color_pixel_buf_Type[VERTICAL_RESOLUTION][HORIZONTAL_RESOLUTION];
 
-pixel_buf_Type pixel_buf;
-
-#include <stdint.h>
-
-// Define the RGBA structure
-
-// Enumerations for color and edge handling
 typedef enum { Red, Blue, GreenBesideRed, GreenBesideBlue } color_t;
 typedef enum { Left, Center, Right } lateral_t;
 typedef enum { Top, Middle, Bottom } vertical_t;
+
+
+pixel_buf_Type pixel_buf;
 
 // hanlde out of bounds cases
 void edge_handler(uint8_t pixels_in[3][3], lateral_t lateral,
@@ -75,14 +71,7 @@ rgba_t filter3x3(uint8_t pixels_in[3][3], lateral_t lateral,
   uint8_t pixels[3][3];
   rgba_t pixel_out;
 
-
-  // Handle edge cases
   edge_handler(pixels_in, lateral, vertical, pixels);
-  /* for (int i = 0; i < 3; ++i) { */
-  /*   for (int j = 0; j < 3; j++) { */
-  /*     pixels[i][j] = pixels_in[i][j]; */
-  /*   } */
-  /* } */
 
   pixel_out.r = pixel_out.g = pixel_out.b = 0;
   pixel_out.a = 0xff; // opaque
@@ -132,7 +121,8 @@ void debayer(pixel_buf_Type *input, color_pixel_buf_Type *output) {
           int x = i + k - 1;
           int y = j + l - 1;
 
-          pixels_in[l][k] = (*input)[y % VERTICAL_RESOLUTION][x % HORIZONTAL_RESOLUTION];
+          pixels_in[l][k] =
+              (*input)[y % VERTICAL_RESOLUTION][x % HORIZONTAL_RESOLUTION];
         }
       }
 
@@ -195,7 +185,8 @@ int main() {
 
       size_t len = 0;
       ssize_t read = getline(&line, &len, stdin);
-      if (read == -1) return 1;
+      if (read == -1)
+        return 1;
 
       input_image[j][i] = (uint8_t)strtol(line, NULL, 16);
     }
