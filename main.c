@@ -1,5 +1,6 @@
 #define VERTICAL_RESOLUTION 30
 #define HORIZONTAL_RESOLUTION 40
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,7 @@ typedef struct {
   uint8_t r, g, b, a;
 } rgba_t;
 
+// NOTE: ROW MAJOR
 typedef uint8_t pixel_buf_Type[VERTICAL_RESOLUTION][HORIZONTAL_RESOLUTION];
 typedef rgba_t color_pixel_buf_Type[VERTICAL_RESOLUTION][HORIZONTAL_RESOLUTION];
 
@@ -120,17 +122,17 @@ void debayer(pixel_buf_Type *input, color_pixel_buf_Type *output) {
   uint8_t pixels_in[3][3];
   uint8_t pixels_out[3][3];
 
+  // current output pixel coordinates
   for (int j = 0; j < VERTICAL_RESOLUTION; ++j) {
     for (int i = 0; i < HORIZONTAL_RESOLUTION; ++i) {
-      // Copy the input to the 3x3 array
+
+      // Copy the filter input to the 3x3 array
       for (int k = 0; k < 3; ++k) {
         for (int l = 0; l < 3; ++l) {
           int x = i + k - 1;
           int y = j + l - 1;
 
-
-          pixels_in[l][k] =
-              (*input)[y % VERTICAL_RESOLUTION][x % HORIZONTAL_RESOLUTION];
+          pixels_in[l][k] = (*input)[y % VERTICAL_RESOLUTION][x % HORIZONTAL_RESOLUTION];
         }
       }
 
@@ -193,9 +195,7 @@ int main() {
 
       size_t len = 0;
       ssize_t read = getline(&line, &len, stdin);
-      if (read == -1) {
-        return 1;
-      }
+      if (read == -1) return 1;
 
       input_image[j][i] = (uint8_t)strtol(line, NULL, 16);
     }
@@ -207,7 +207,6 @@ int main() {
   for (int j = 0; j < VERTICAL_RESOLUTION; ++j) {
     for (int i = 0; i < HORIZONTAL_RESOLUTION; ++i) {
       rgba_t px = output_image[j][i];
-      // print address i,j
       printf("%02hhx%02hhx%02hhx%02hhx\n", px.r, px.g, px.b, px.a);
     }
   }
